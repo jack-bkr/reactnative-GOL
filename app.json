@@ -2,6 +2,7 @@
   "expo": {
     "name": "gameoflife",
     "slug": "gameoflife",
+    "owner": "jackbkr",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
