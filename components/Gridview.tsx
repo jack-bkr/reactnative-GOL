@@ -1,52 +1,66 @@
-import React from 'react';
-import { StyleSheet, View, FlatList, Text} from 'react-native';
+import React, {useRef} from 'react';
+import { StyleSheet, View, FlatList, Text, Dimensions, TouchableOpacity } from 'react-native';
 
+export class GridItem {
+    color: string;
+    index: number[];
+    ref: React.RefObject<any>;
 
-type GridItem = {
-  color: string;
-  index: number;
+    constructor(color: string, index: number[]){
+        this.color = color;
+        this.index = index;
+        this.ref = useRef(null);
+    }
+
+    handleClick = () => {
+        console.log(this.index);
+        if (this.color === "red") {
+            this.color = "green";
+
+        } else {
+            this.color = "red";
+        }
+        console.log(this.ref);
+        //this.ref.current.style.backgroundColor = this.color;
+    }
 }
 
-const Grid = ({ rowNum, colNum }: { rowNum: number, colNum: number }) => {
-  const rows: GridItem[][] = []
+const GridView = ({ Grid, rowNum, colNum }: { Grid: GridItem[][], rowNum: number, colNum: number }) => {
+    const screenWidth = Dimensions.get('window').width;
+    const boxSize = (screenWidth / colNum) - 2;
 
-  for (let i = 0; i < rowNum; i++) {
-    const column: GridItem[] = []
-    for (let j = 0; j < colNum; j++) {
-      column.push({ color: 'red' } as GridItem);
-    }
-    rows.push(column)
-  }
-
-  return (
-    <FlatList
-      data={rows}
-      keyExtractor={(item, index) => index.toString()}
-      renderItem={({ item }) => (
-        <View style={styles.row}>
-          {item.map((box, index) => (
-            <View style={[styles.box, { backgroundColor: box.color }]}>
-              <Text>{index}</Text>
-            </View>
-          ))}
-        </View>
-      )}    
-    />
-  );
+    return (
+        <FlatList
+            style={styles.container}
+            data={Grid}
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={({ item }) => (
+                <View style={styles.row}>
+                    {item.map((box, index) => (
+                        <TouchableOpacity key={index} onPress={() => box.handleClick()} >
+                            <View ref={box.ref} style={[styles.box, { backgroundColor: box.color, width: boxSize, height: boxSize }]} >
+                                <Text style={{fontSize:7}} >{box.index[0]}, {box.index[1]}</Text>
+                            </View>
+                        </TouchableOpacity>
+                    ))}
+                </View>
+            )}
+        />
+    );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-  },
-  row: {
-    flexDirection: 'row',
-  },
-  box: {
-    width: 50,
-    height: 50,
-  }
+    container: {
+        flex: 1,
+        padding: 10,
+    },
+    row: {
+        flexDirection: 'row',
+    },
+    box: {
+        borderColor: 'black',
+        borderWidth: 1,
+    }
 });
 
-export default Grid;
+export default GridView;
