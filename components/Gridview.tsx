@@ -15,8 +15,12 @@ export class GridItem {
     handleClick = () => {
         console.log(this.index);
         const newColor = this.color === "red" ? "green" : "red";
+        this.setColor(newColor);
         this.updateParent(this.index, newColor);
-        //this.ref.current.style.backgroundColor = this.color;
+    }
+
+    setColor = (newColor: string) => {
+        this.color = newColor;
     }
 }
 

@@ -1,11 +1,11 @@
-import { Text, View } from "react-native";
+import {Button, Text, View} from "react-native";
 
 import GridView, {GridItem} from "@/components/Gridview";
-import {useCallback, useState} from "react";
+import {useCallback, useEffect, useState} from "react";
 
 export default function Index() {
-    const rowNum = 15;
-    const colNum = 15;
+    const rowNum = 16;
+    const colNum = 16;
 
     const updateParent = useCallback((index: number[], newColor: string) => {
         setGrid(currentGrid => {
@@ -21,6 +21,16 @@ export default function Index() {
 
     const [grid, setGrid] = useState(createInitialGrid(rowNum, colNum, updateParent));
 
+    useEffect(() => {
+        setInitialState(grid, rowNum, colNum);
+    }, []);
+
+    const resetGrid = () => {
+        const newGrid = createInitialGrid(rowNum, colNum, updateParent);
+        setGrid(newGrid);
+        setInitialState(newGrid, rowNum, colNum);
+    }
+
     return (
         <View
             style={{
@@ -31,6 +41,7 @@ export default function Index() {
         >
             <Text>Edit app/index.tsx to edit this screen.</Text>
             <GridView Grid={grid} rowNum={rowNum} colNum={colNum} />
+            <Button title="Reset" onPress={resetGrid} />
         </View>
     );
 }
@@ -45,4 +56,40 @@ function createInitialGrid(rowNum: number, colNum: number, updateParent: (index:
         grid.push(row);
     }
     return grid;
+}
+
+function setInitialState(grid: GridItem[][], rowNum: number, colNum: number) {
+    const middleRow  = rowNum / 2;
+    const middleCol = colNum / 2;
+
+    if (Number.isInteger(middleRow) && Number.isInteger(middleCol)) {
+        grid[middleRow][middleCol].setColor("green");
+        grid[middleRow][middleCol - 1].setColor("green");
+        grid[middleRow - 1][middleCol].setColor("green");
+        grid[middleRow - 1][middleCol - 1].setColor("green");
+        grid[middleRow + 1][middleCol + 1].setColor("green");
+        grid[middleRow + 1][middleCol - 2].setColor("green");
+        grid[middleRow - 2][middleCol + 1].setColor("green");
+        grid[middleRow - 2][middleCol - 2].setColor("green");
+    } else if (Number.isInteger(middleRow) && !Number.isInteger(middleCol)) {
+        grid[middleRow][middleCol - 0.5].setColor("green");
+        grid[middleRow - 1][middleCol - 0.5].setColor("green");
+        grid[middleRow - 2][middleCol + 0.5].setColor("green");
+        grid[middleRow - 2][middleCol - 1.5].setColor("green");
+        grid[middleRow + 1][middleCol - 1.5].setColor("green");
+        grid[middleRow + 1][middleCol + 0.5].setColor("green");
+    } else if (!Number.isInteger(middleRow) && Number.isInteger(middleCol)) {
+        grid[middleRow - 0.5][middleCol].setColor("green");
+        grid[middleRow - 0.5][middleCol - 1].setColor("green");
+        grid[middleRow - 1.5][middleCol + 1].setColor("green");
+        grid[middleRow + 0.5][middleCol + 1].setColor("green");
+        grid[middleRow - 1.5][middleCol - 2].setColor("green");
+        grid[middleRow + 0.5][middleCol - 2].setColor("green");
+    } else {
+        grid[middleRow - 0.5][middleCol - 0.5].setColor("green");
+        grid[middleRow - 1.5][middleCol + 0.5].setColor("green");
+        grid[middleRow + 0.5][middleCol - 1.5].setColor("green");
+        grid[middleRow - 1.5][middleCol - 1.5].setColor("green");
+        grid[middleRow + 0.5][middleCol + 0.5].setColor("green");
+    }
 }
