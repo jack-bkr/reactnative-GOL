@@ -1,26 +1,21 @@
-import React, {useRef} from 'react';
+import React from 'react';
 import { StyleSheet, View, FlatList, Text, Dimensions, TouchableOpacity } from 'react-native';
 
 export class GridItem {
     color: string;
     index: number[];
-    ref: React.RefObject<any>;
+    updateParent: (index: number[], newColor: string) => void;
 
-    constructor(color: string, index: number[]){
+    constructor(color: string, index: number[], updateParent: (index: number[], newColor: string) => void) {
         this.color = color;
         this.index = index;
-        this.ref = useRef(null);
+        this.updateParent = updateParent;
     }
 
     handleClick = () => {
         console.log(this.index);
-        if (this.color === "red") {
-            this.color = "green";
-
-        } else {
-            this.color = "red";
-        }
-        console.log(this.ref);
+        const newColor = this.color === "red" ? "green" : "red";
+        this.updateParent(this.index, newColor);
         //this.ref.current.style.backgroundColor = this.color;
     }
 }
@@ -38,7 +33,7 @@ const GridView = ({ Grid, rowNum, colNum }: { Grid: GridItem[][], rowNum: number
                 <View style={styles.row}>
                     {item.map((box, index) => (
                         <TouchableOpacity key={index} onPress={() => box.handleClick()} >
-                            <View ref={box.ref} style={[styles.box, { backgroundColor: box.color, width: boxSize, height: boxSize }]} >
+                            <View style={[styles.box, { backgroundColor: box.color, width: boxSize, height: boxSize }]} >
                                 <Text style={{fontSize:7}} >{box.index[0]}, {box.index[1]}</Text>
                             </View>
                         </TouchableOpacity>

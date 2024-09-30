@@ -1,21 +1,26 @@
 import { Text, View } from "react-native";
 
 import GridView, {GridItem} from "@/components/Gridview";
-import {useState} from "react";
+import {useCallback, useState} from "react";
 
 export default function Index() {
     const rowNum = 15;
     const colNum = 15;
 
-    const grid: GridItem[][] = []
+    const updateParent = useCallback((index: number[], newColor: string) => {
+        setGrid(currentGrid => {
+            const newGrid = currentGrid.map(row => row.map(item => {
+                if (item.index[0] === index[0] && item.index[1] === index[1]) {
+                    return new GridItem(newColor, index, updateParent);
+                }
+                return item;
+            }));
+            return newGrid;
+        })
+    }, []);
 
-    for (let i = 0; i < rowNum; i++) {
-        const column: GridItem[] = []
-        for (let j = 0; j < colNum; j++) {
-            column.push(new GridItem("red", [i, j]));
-        }
-        grid.push(column)
-    }
+    const [grid, setGrid] = useState(createInitialGrid(rowNum, colNum, updateParent));
+
     return (
         <View
             style={{
@@ -28,4 +33,16 @@ export default function Index() {
             <GridView Grid={grid} rowNum={rowNum} colNum={colNum} />
         </View>
     );
+}
+
+function createInitialGrid(rowNum: number, colNum: number, updateParent: (index: number[], newColor: string) => void) {
+    const grid = [];
+    for (let i = 0; i < rowNum; i++) {
+        const row = [];
+        for (let j = 0; j < colNum; j++) {
+            row.push(new GridItem("red", [i, j], updateParent));
+        }
+        grid.push(row);
+    }
+    return grid;
 }
